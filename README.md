@@ -1,0 +1,2 @@
+# AlgorithmsOnGraphs
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/505f37741f264d068bb1da5420656358)](https://www.codacy.com/app/gges5110/AlgorithmsOnGraphs?utm_source=github.com&utm_medium=referral&utm_content=gges5110/AlgorithmsOnGraphs&utm_campaign=badger)
