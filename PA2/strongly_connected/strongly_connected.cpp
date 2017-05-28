@@ -32,12 +32,12 @@ using std::ifstream;
 using std::endl;
 using std::cout;
 
-void Visited(int u, vector<bool>& visited, vector<vector<int>>& adj, vector<int>& L);
-void Assign(int u, int root, vector<int>& assigned_component, vector<vector<int>>& reverse_adj);
-vector<vector<int>> Reverse(vector<vector<int>>& adj);
-int UniqueElements(vector<int>& vec);
+void Visited(int u, vector<bool>& visited, const vector<vector<int>>& adj, vector<int>& L);
+void Assign(int u, int root, vector<int>& assigned_component, const vector<vector<int>>& reverse_adj);
+vector<vector<int>> Reverse(const vector<vector<int>>& adj);
+int UniqueElements(const vector<int>& vec);
 
-int number_of_strongly_connected_components(vector<vector<int>>& adj) {
+int number_of_strongly_connected_components(const vector<vector<int>>& adj) {
   int result = 0;
   // Kosaraju's algorithm
   // A. For each vertex u of the graph, mark u as unvisited. Let L be empty.
@@ -70,7 +70,7 @@ int number_of_strongly_connected_components(vector<vector<int>>& adj) {
   return result;
 }
 
-void Visited(int u, vector<bool>& visited, vector<vector<int>>& adj, vector<int>& L) {
+void Visited(int u, vector<bool>& visited, const vector<vector<int>>& adj, vector<int>& L) {
   if (!visited[u]) {
     visited[u] = true;
     for (int v: adj[u]) {
@@ -80,7 +80,7 @@ void Visited(int u, vector<bool>& visited, vector<vector<int>>& adj, vector<int>
   }
 }
 
-void Assign(int u, int root, vector<int>& assigned_component, vector<vector<int>>& reverse_adj) {
+void Assign(int u, int root, vector<int>& assigned_component, const vector<vector<int>>& reverse_adj) {
   if (assigned_component[u] == -1) {
     assigned_component[u] = root;
     for (int v: reverse_adj[u]) {
@@ -89,7 +89,7 @@ void Assign(int u, int root, vector<int>& assigned_component, vector<vector<int>
    }
 }
 
-vector<vector<int>> Reverse(vector<vector<int>>& adj) {
+vector<vector<int>> Reverse(const vector<vector<int>>& adj) {
   vector<vector<int>> reverse_adj(adj.size(), vector<int>());
   for (int u = 0; u < adj.size(); ++u) {
     for (int v: adj[u]) {
@@ -99,7 +99,7 @@ vector<vector<int>> Reverse(vector<vector<int>>& adj) {
   return reverse_adj;
 }
 
-int UniqueElements(vector<int>& vec) {
+int UniqueElements(const vector<int>& vec) {
   std::unordered_set<int> set;
   int result = 0;
   for (int u: vec) {
