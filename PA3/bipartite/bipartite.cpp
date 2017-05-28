@@ -38,52 +38,52 @@ int oppositeColor(const vector<int>& color, int u);
 int bipartite(const vector<vector<int>> &adj) {
   // write your code here
   int n = adj.size();
-	vector<int> color(n, -1);
-	for (int u = 0; u < n; ++u) {
-		// Do BFS on each node that's not colored.
-		if (color[u] == -1) {
-		  color[u] = 1;
-			if (BFS(u, color, adj)) {
-				// Return 0 is the graph is not bipartite.
-				return 0;
-			}
-		}
-	}
+  vector<int> color(n, -1);
+  for (int u = 0; u < n; ++u) {
+    // Do BFS on each node that's not colored.
+    if (color[u] == -1) {
+      color[u] = 1;
+      if (BFS(u, color, adj)) {
+        // Return 0 is the graph is not bipartite.
+        return 0;
+      }
+    }
+  }
   return 1;
 }
 
 
 bool BFS(int u, vector<int>& color, const vector<vector<int>>& adj) {
-	queue<int> q;
-	q.push(u);
+  queue<int> q;
+  q.push(u);
 
-	while (!q.empty()) {
-		u = q.front();
-		q.pop();
-		for (int v: adj[u]) {
-		  if (color[v] == -1) {
-				color[v] = oppositeColor(color, u);
-				q.push(v);
-			} else {
-		  	if (colorCompare(color, u, v)) {
-			  	return true;
-				}
-			}
-		}
-	}
-	return false;
+  while (!q.empty()) {
+    u = q.front();
+    q.pop();
+    for (int v: adj[u]) {
+      if (color[v] == -1) {
+        color[v] = oppositeColor(color, u);
+        q.push(v);
+      } else {
+        if (colorCompare(color, u, v)) {
+          return true;
+        }
+      }
+    }
+  }
+  return false;
 }
 
 bool colorCompare(const vector<int>& color, int u, int v) {
-	// Return true if the color collide with each other.
-	if (color[u] == -1 || color[v] == -1) {
-		return false;
-	}
-	return color[u] == color[v];
+  // Return true if the color collide with each other.
+  if (color[u] == -1 || color[v] == -1) {
+    return false;
+  }
+  return color[u] == color[v];
 }
 
 int oppositeColor(const vector<int>& color, int u) {
-	return color[u] == 1 ? 2 : 1;
+  return color[u] == 1 ? 2 : 1;
 }
 
 
@@ -97,16 +97,16 @@ int main(int argc, char *argv[]) {
       fs.open(argv[1]);
 
       // Original main
-  	  int n, m;
-  	  fs >> n >> m;
-  	  vector<vector<int> > adj(n, vector<int>());
-  	  for (int i = 0; i < m; i++) {
-  	    int x, y;
-  	    fs >> x >> y;
-  	    adj[x - 1].push_back(y - 1);
-  	    adj[y - 1].push_back(x - 1);
-  	  }
-  	  std::cout << bipartite(adj) << endl;
+      int n, m;
+      fs >> n >> m;
+      vector<vector<int> > adj(n, vector<int>());
+      for (int i = 0; i < m; i++) {
+        int x, y;
+        fs >> x >> y;
+        adj[x - 1].push_back(y - 1);
+        adj[y - 1].push_back(x - 1);
+      }
+      std::cout << bipartite(adj) << endl;
     } catch (ifstream::failure& e) {
       std::cerr << "Exception opening/reading file" << endl;
     }
