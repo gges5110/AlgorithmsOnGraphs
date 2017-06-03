@@ -52,7 +52,6 @@ int bipartite(const vector<vector<int>> &adj) {
   return 1;
 }
 
-
 bool BFS(int u, vector<int>& color, const vector<vector<int>>& adj) {
   queue<int> q;
   q.push(u);
@@ -86,7 +85,6 @@ int oppositeColor(const vector<int>& color, int u) {
   return color[u] == 1 ? 2 : 1;
 }
 
-
 int main(int argc, char *argv[]) {
   if (argc != 2) {
     cout << "Please provide a valid filename for testing." << endl;
@@ -113,6 +111,4 @@ int main(int argc, char *argv[]) {
     fs.close();
   }
   return 0;
-
 }
-
