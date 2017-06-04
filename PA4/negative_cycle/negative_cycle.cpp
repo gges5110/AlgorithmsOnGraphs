@@ -1,10 +1,15 @@
 #include <iostream>
 #include <vector>
-
+#include <limits.h>
 using std::vector;
 
+// https://stackoverflow.com/questions/16898416/fastest-algorithm-to-detect-if-there-is-negative-cycle-in-a-graph
+
 int negative_cycle(vector<vector<int> > &adj, vector<vector<int> > &cost) {
-  //write your code here
+  // write your code here
+  int n = adj.size();
+  vector<int> dist(n, INT_MAX);
+  dist[]
   return 0;
 }
 
