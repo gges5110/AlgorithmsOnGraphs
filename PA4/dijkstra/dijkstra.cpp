@@ -9,9 +9,10 @@ Task. Given an directed graph with positive edge weights and with n vertices and
 vertices u and v, compute the weight of a shortest path between u and v (that is, the minimum total
 weight of a path from u to v).
 Input Format. A graph is given in the standard format. The next line contains two vertices u and v.
-Constraints. 1 ≤ n ≤ 10 3 , 0 ≤ m ≤ 10 5 , u 6 = v, 1 ≤ u, v ≤ n, edge weights are non-negative integers not
-exceeding 10 3 .
+Constraints. 1 ≤ n ≤ 10^3 , 0 ≤ m ≤ 10^5 , u ! = v, 1 ≤ u, v ≤ n, edge weights are non-negative integers not
+exceeding 10^3.
 Output Format. Output the minimum weight of a path from u to v, or −1 if there is no path
+
 Compile command:
 g++ -o dijkstra.exe dijkstra.cpp -std=c++11
 Execution command:
