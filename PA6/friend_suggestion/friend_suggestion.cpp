@@ -94,7 +94,7 @@ public:
   Len query(int s, int t) {
     clear();
     Queue q(2);
-    std::cout << "s = " << s << ", t = " << t << std::endl;
+    // std::cout << "s = " << s << ", t = " << t << std::endl;
     if (s == t) {
       return 0;
     }
@@ -105,26 +105,27 @@ public:
     // visit(q, 0, s, 0);
     // visit(q, 1, t, 0);
     // Implement the rest of the algorithm yourself
-    std::cout << "aaa." << std::endl;
+    // std::cout << "aaa." << std::endl;
     while (true) {
-      printDistance(distance_[direction]);
+      // printDistance(distance_[direction]);
       int u = extractMin(distance_[direction], visited_);
-      std::cout << "working set: " << std::endl;
-      for (int i: workset_) {
-        std::cout << workset_[i] << ", ";
-      }
-      std::cout << "u = " << u << std::endl;
+      // std::cout << "working set: " << std::endl;
+      // for (int i: workset_) {
+      //   std::cout << workset_[i] << ", ";
+      // }
+      // std::cout << "u = " << u << std::endl;
 
       if (inside(workset_, u) || u == -1) {
         break;
       } else {
         visited_[u] = true;
         workset_.push_back(u);
-        for (int j = 0; j < n_; ++j) {
+        for (int j = 0; j < adj_[direction][u].size(); ++j) {
+          // std::cout << "j = " << j << std::endl;
           int v = adj_[direction][u][j];
           int alt = distance_[direction][u] + cost_[direction][u][j];
           if (alt < distance_[direction][v]) {
-            std::cout << "relaxing (" << u << ", " << v << "), Original = " << distance_[direction][v] << ", new = " << alt << std::endl;
+            // std::cout << "relaxing (" << u << ", " << v << "), Original = " << distance_[direction][v] << ", new = " << alt << std::endl;
             distance_[direction][v] = alt;
           }
         }
@@ -133,21 +134,23 @@ public:
       direction = direction == 0 ? 1 : 0;
     }
 
-    std::cout << "final dist: ";
-    printDistance(distance_[0]);
-    std::cout << "finalrdist: ";
-    printDistance(distance_[1]);
+    // std::cout << "final dist: ";
+    // printDistance(distance_[0]);
+    // std::cout << "finalrdist: ";
+    // printDistance(distance_[1]);
 
-    int min = numeric_limits<int>::max();
+    Len min = INFINITY_;
     for (int u: workset_) {
-      int alt = distance_[0][u] + distance_[1][u];
-      std::cout << "alt = " << alt << std::endl;
-      if (min > alt) {
-        min = alt;
+      if (distance_[0][u] != INFINITY_ && distance_[1][u] != INFINITY_) {
+        int alt = distance_[0][u] + distance_[1][u];
+        // std::cout << "alt[" << u << "] = " << alt << std::endl;
+        if (min > alt) {
+          min = alt;
+        }
       }
     }
 
-    return min;
+    return min == INFINITY_ ? -1 : min;
   }
 };
 
