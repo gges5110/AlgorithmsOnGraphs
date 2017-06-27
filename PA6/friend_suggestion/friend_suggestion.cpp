@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <algorithm>
 #include <queue>
 #include <limits>
 #include <utility>
@@ -19,7 +20,8 @@ typedef long long Len;
 // Each priority queue stores the closest unprocessed node in its head.
 typedef vector<priority_queue<pair<Len, int>,vector<pair<Len,int>>,greater<pair<Len,int>>>> Queue;
 
-const Len INFINITY = numeric_limits<Len>::max() / 4;
+// https://stackoverflow.com/questions/35534478/including-algorithm-and-limits-causes-invalid-pure-specifier-compilation-e
+const Len INFINITY_ = numeric_limits<Len>::max() / 4;
 
 class Bidijkstra {
   // Number of nodes
@@ -41,9 +43,25 @@ class Bidijkstra {
   // either by forward or backward search.
   vector<bool> visited_;
 
+  int extractMin(const vector<Len> &dist, const vector<bool> &visited) {
+    int min = numeric_limits<int>::max(), min_index = -1;
+    for (int i = 0; i < dist.size(); ++i) {
+      if (!visited[i] && min > dist[i]) {
+        min = dist[i];
+        min_index = i;
+      }
+    }
+
+    return min_index;
+  }
+
+  bool inside(const vector<int> &v, int u) const {
+    return std::find(v.begin(), v.end(), u) != v.end();
+  }
+
 public:
   Bidijkstra(int n, Adj adj, Adj cost)
-    : n_(n), adj_(adj), cost_(cost), distance_(2, vector<Len>(n, INFINITY)), visited_(n)
+    : n_(n), adj_(adj), cost_(cost), distance_(2, vector<Len>(n, INFINITY_)), visited_(n)
   { workset_.reserve(n); }
 
   // Initialize the data structures before new query,
@@ -51,7 +69,7 @@ public:
   void clear() {
     for (int i = 0; i < workset_.size(); ++i) {
       int v = workset_[i];
-      distance_[0][v] = distance_[1][v] = INFINITY;
+      distance_[0][v] = distance_[1][v] = INFINITY_;
       visited_[v] = false;
     }
     workset_.clear();
@@ -68,11 +86,41 @@ public:
   Len query(int s, int t) {
     clear();
     Queue q(2);
-    visit(q, 0, s, 0);
-    visit(q, 1, t, 0);
+    int direction = 0;
+
+    // visit(q, 0, s, 0);
+    // visit(q, 1, t, 0);
     // Implement the rest of the algorithm yourself
 
-    return -1;
+    while (true) {
+      int u = extractMin(distance_[direction], visited_);
+      if (inside(workset_, u)) {
+        break;
+      } else {
+        visited_[u] = true;
+        workset_.push_back(u);
+        for (int j = 0; j < n_; ++j) {
+          int v = adj_[direction][u][j];
+          int alt = distance_[direction][u] + cost_[direction][u][j];
+          if (alt < distance_[direction][v]) {
+            distance_[direction][v] = alt;
+          }
+        }
+      }
+
+      direction = direction == 0 ? 1 : 0;
+    }
+std::cout << "aaa." << std::endl;
+    // int min = numeric_limits<int>::max();
+    int min = 10000;
+    for (int u: workset_) {
+      int alt = distance_[0][u] + distance_[1][u];
+      if (min > alt) {
+        min = alt;
+      }
+    }
+
+    return min;
   }
 };
 
