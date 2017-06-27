@@ -1,4 +1,6 @@
-
+/*
+g++ -o friend_suggestion.exe friend_suggestion.cpp -std=c++11
+*/
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -59,6 +61,12 @@ class Bidijkstra {
     return std::find(v.begin(), v.end(), u) != v.end();
   }
 
+  void printDistance(const vector<Len> &dist) {
+    for (int i = 0; i < dist.size(); ++i) {
+      std::cout << "dist[" << i << "] = " << dist[i] << endl;
+    }
+  }
+
 public:
   Bidijkstra(int n, Adj adj, Adj cost)
     : n_(n), adj_(adj), cost_(cost), distance_(2, vector<Len>(n, INFINITY_)), visited_(n)
@@ -86,15 +94,28 @@ public:
   Len query(int s, int t) {
     clear();
     Queue q(2);
+    std::cout << "s = " << s << ", t = " << t << std::endl;
+    if (s == t) {
+      return 0;
+    }
     int direction = 0;
+    distance_[0][s] = 0;
+    distance_[1][t] = 0;
 
     // visit(q, 0, s, 0);
     // visit(q, 1, t, 0);
     // Implement the rest of the algorithm yourself
-
+    std::cout << "aaa." << std::endl;
     while (true) {
+      printDistance(distance_[direction]);
       int u = extractMin(distance_[direction], visited_);
-      if (inside(workset_, u)) {
+      std::cout << "working set: " << std::endl;
+      for (int i: workset_) {
+        std::cout << workset_[i] << ", ";
+      }
+      std::cout << "u = " << u << std::endl;
+
+      if (inside(workset_, u) || u == -1) {
         break;
       } else {
         visited_[u] = true;
@@ -103,6 +124,7 @@ public:
           int v = adj_[direction][u][j];
           int alt = distance_[direction][u] + cost_[direction][u][j];
           if (alt < distance_[direction][v]) {
+            std::cout << "relaxing (" << u << ", " << v << "), Original = " << distance_[direction][v] << ", new = " << alt << std::endl;
             distance_[direction][v] = alt;
           }
         }
@@ -110,11 +132,16 @@ public:
 
       direction = direction == 0 ? 1 : 0;
     }
-std::cout << "aaa." << std::endl;
-    // int min = numeric_limits<int>::max();
-    int min = 10000;
+
+    std::cout << "final dist: ";
+    printDistance(distance_[0]);
+    std::cout << "finalrdist: ";
+    printDistance(distance_[1]);
+
+    int min = numeric_limits<int>::max();
     for (int u: workset_) {
       int alt = distance_[0][u] + distance_[1][u];
+      std::cout << "alt = " << alt << std::endl;
       if (min > alt) {
         min = alt;
       }
