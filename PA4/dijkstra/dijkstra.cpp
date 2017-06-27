@@ -22,47 +22,53 @@ Execution command:
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include <queue>
 #include <limits.h>
 
 using std::vector;
-using std::queue;
 using std::ifstream;
-using std::pair;
-using std::priority_queue;
 
-class compareDist {
-  const vector<int>& _dist;
-public:
-  compareDist(const vector<int>& dist): _dist(dist) {
+int extractMin(const vector<int> &dist, const vector<bool> &visited) {
+  int min = INT_MAX, min_index = -1;
+  for (int i = 0; i < dist.size(); ++i) {
+    if (!visited[i] && min > dist[i]) {
+      min = dist[i];
+      min_index = i;
+    }
   }
 
-  bool operator()(int u, int v) {
-    return _dist[u] < _dist[v];
+  return min_index;
+}
+
+bool allVisited(const vector<bool> &visited) {
+  for (bool b: visited) {
+    if (!b) {
+      return false;
+    }
   }
-};
+  return true;
+}
 
 int distance(const vector<vector<int>> &adj, const vector<vector<int>> &cost, int s, int t) {
   // write your code here
   int n = adj.size();
   vector<int> dist(n, INT_MAX); //, prev(n, -1); We don't need the path.
-  priority_queue<int, vector<int>, compareDist> unvisited{compareDist(dist)};
-
-  unvisited.push(s);
+  vector<bool> visited(n, false);
   dist[s] = 0;
 
-  while (!unvisited.empty()) {
-    int u = unvisited.top();
-    unvisited.pop();
+  while (!allVisited(visited)) {
+    int u = extractMin(dist, visited);
+    visited[u] = true;
 
-    for (int j = 0; j < adj[u].size(); ++j) {
-      int v = adj[u][j];
-      // std::cout << "cost[" << u << "][" << v << "] = " << cost[u][j] << std::endl;
-      int alt = dist[u] + cost[u][j];
-      if (alt < dist[v]) {
-        dist[v] = alt;
-        // prev[v] = u;
-        unvisited.push(v);
+    if (u == t) {
+      break;
+    } else {
+      for (int j = 0; j < adj[u].size(); ++j) {
+        int v = adj[u][j];
+        // std::cout << "cost[" << u << "][" << v << "] = " << cost[u][j] << std::endl;
+        int alt = dist[u] + cost[u][j];
+        if (alt < dist[v]) {
+          dist[v] = alt;
+        }
       }
     }
   }
@@ -101,4 +107,3 @@ int main(int argc, char *argv[]) {
   }
   return 0;
 }
-
