@@ -1,2 +1,3 @@
 *.exe
 *.swp
+__pycache__
