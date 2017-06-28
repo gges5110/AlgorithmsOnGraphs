@@ -30,6 +30,10 @@ def main():
     else:
         module = str(sys.argv[1])
 
+    # Removing the trailing slash
+    if module[len(module) - 1] == '/':
+        module = module[:len(module) - 1]
+
     # Get the file list in test directory
     f = []
     # test_folder = raw_input("test folder?")
@@ -45,9 +49,9 @@ def main():
         print ("No tests found.")
         sys.exit(0)
 
-    # TODO: compile code if executable is not there
-    print ("")
-    print (printWithColor(bcolors.OKGREEN, "[==========] ") + str(len(f)) + " test cases.")
+
+    print ("Running " + module)
+    print (printWithColor(bcolors.OKGREEN, "[==========] ") + "Running " + str(len(f)) + " test cases.")
     passed = 0
     failed = []
     total_time = 0
@@ -60,6 +64,7 @@ def main():
                 exe_filename = filename
                 break
         break
+    # compile code if executable is not there
     if exe_filename == "":
         try:
             input_build = input("No executables found. Build? (Y/n)")
@@ -80,7 +85,6 @@ def main():
         test_name = "tests/" + f[i]
         # print (command)
         print (printWithColor(bcolors.OKGREEN, "[ RUN      ] ") + module + "/" + test_name)
-
         ts_start = time.time()
         p = subprocess.Popen(["exec " + command], shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         try:
@@ -97,21 +101,28 @@ def main():
             content = ""
             input_filename = f[i]
             output_filename = module + "/tests/output" + input_filename[5:]
-            with open(output_filename) as ff:
-                content = ff.readlines()
-                # print (content)
+            try:
+                with open(output_filename) as ff:
+                    content = ff.readlines()
+                    # print (content)
+            except FileNotFoundError:
+                print (printWithColor(bcolors.FAIL, "[  FAILED  ]"))
+                print ("Output test file not found.")
+                failed.append(test_name)
+                continue
 
             if line.decode("utf-8")  == content[idx]:
                 print (printWithColor(bcolors.OKGREEN, "[       OK ] ") + module + "/" + test_name + " (" + str(int(ts_total * 1000)) + " ms)")
                 passed = passed + 1
             else:
-                print (printWithColor(bcolors.FAIL, "Failure "))
-                print ("Expected: " + printWithColor(bcolors.OKGREEN, content[0].rstrip()))
-                print ("Actual:   " + printWithColor(bcolors.FAIL, line.decode("utf-8")))
+                print ("Line " + str(idx + 1) + ": Failure")
+                print ("  Actual: " + printWithColor(bcolors.FAIL, line.decode("utf-8").strip()))
+                print ("Expected: " + printWithColor(bcolors.OKGREEN, content[idx].rstrip()))
+                print (printWithColor(bcolors.FAIL, "[  FAILED  ] ") + module + "/" + test_name)
                 failed.append(test_name)
 
     print ("")
-    print (printWithColor(bcolors.OKGREEN, "[==========] ") + str(len(f)) + " tests ran. (" + str(int(total_time * 1000)) + " ms)")
+    print (printWithColor(bcolors.OKGREEN, "[==========] ") + str(len(f)) + " tests ran. (" + str(int(total_time * 1000)) + " ms total)")
     print (printWithColor(bcolors.OKGREEN, "[  PASSED  ] ") + str(passed) + " tests.")
     if len(failed) > 0:
         print (printWithColor(bcolors.FAIL, "[  FAILED  ] ") + str(len(failed)) + " tests, listed below:")
