@@ -1,3 +1,4 @@
 *.exe
 *.swp
+.vscode/*
 __pycache__
