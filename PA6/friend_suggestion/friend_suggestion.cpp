@@ -23,33 +23,34 @@ typedef long long Len;
 typedef vector<priority_queue<pair<Len, int>,vector<pair<Len,int>>,greater<pair<Len,int>>>> Queue;
 
 // https://stackoverflow.com/questions/35534478/including-algorithm-and-limits-causes-invalid-pure-specifier-compilation-e
-const Len INFINITY_ = numeric_limits<Len>::max() / 4;
+const Len const_INFINITY = numeric_limits<Len>::max() / 4;
 
 class Bidijkstra {
   // Number of nodes
-  int n_;
-  // Graph adj_[0] and cost_[0] correspond to the initial graph,
-  // adj_[1] and cost_[1] correspond to the reversed graph.
+  uint32_t _n;
+  // Graph _adj[0] and _cost[0] correspond to the initial graph,
+  // _adj[1] and _cost[1] correspond to the reversed graph.
   // Graphs are stored as vectors of adjacency lists corresponding
   // to nodes.
-  // Adjacency list itself is stored in adj_, and the corresponding
-  // edge costs are stored in cost_.
-  Adj adj_;
-  Adj cost_;
-  // distance_[0] stores distances for the forward search,
-  // and distance_[1] stores distances for the backward search.
-  vector<vector<Len>> distance_;
+  // Adjacency list itself is stored in _adj, and the corresponding
+  // edge costs are stored in _cost.
+  Adj _adj;
+  Adj _cost;
+  // _distance[0] stores distances for the forward search,
+  // and _distance[1] stores distances for the backward search.
+  vector<vector<Len>> _distance;
   // Stores all the nodes visited either by forward or backward search.
-  vector<int> workset_;
+  vector<int> _workset;
   // Stores a flag for each node which is True iff the node was visited
   // either by forward or backward search.
-  vector<bool> visited_;
+  vector<bool> _visited;
 
-  int extractMin(const vector<Len> &dist, const vector<bool> &visited) {
-    int min = numeric_limits<int>::max(), min_index = -1;
-    for (int i = 0; i < dist.size(); ++i) {
-      if (!visited[i] && min > dist[i]) {
-        min = dist[i];
+  int extractMin(uint32_t direction) {
+    Len min = const_INFINITY;
+    int min_index = -1;
+    for (uint32_t i = 0; i < _distance[direction].size(); ++i) {
+      if (!_visited[i] && min > _distance[direction][i]) {
+        min = _distance[direction][i];
         min_index = i;
       }
     }
@@ -57,100 +58,78 @@ class Bidijkstra {
     return min_index;
   }
 
-  bool inside(const vector<int> &v, int u) const {
-    return std::find(v.begin(), v.end(), u) != v.end();
-  }
-
   void printDistance(const vector<Len> &dist) {
-    for (int i = 0; i < dist.size(); ++i) {
+    for (uint32_t i = 0; i < dist.size(); ++i) {
       std::cout << "dist[" << i << "] = " << dist[i] << endl;
     }
   }
 
-public:
-  Bidijkstra(int n, Adj adj, Adj cost)
-    : n_(n), adj_(adj), cost_(cost), distance_(2, vector<Len>(n, INFINITY_)), visited_(n)
-  { workset_.reserve(n); }
-
   // Initialize the data structures before new query,
   // clear the changes made by the previous query.
   void clear() {
-    for (int i = 0; i < workset_.size(); ++i) {
-      int v = workset_[i];
-      distance_[0][v] = distance_[1][v] = INFINITY_;
-      visited_[v] = false;
+    for (uint32_t v = 0; v < _n; ++v) {
+      _distance[0][v] = _distance[1][v] = const_INFINITY;
+      _visited[v] = false;
     }
-    workset_.clear();
+    _workset.clear();
   }
 
-  // Processes visit of either forward or backward search
-  // (determined by value of side), to node v trying to
-  // relax the current distance by dist.
-  void visit(Queue& q, int side, int v, Len dist) {
-    // Implement this method yourself
-  }
-
-  // Returns the distance from s to t in the graph.
-  Len query(int s, int t) {
-    clear();
-    Queue q(2);
-    // std::cout << "s = " << s << ", t = " << t << std::endl;
-    if (s == t) {
-      return 0;
-    }
-    int direction = 0;
-    distance_[0][s] = 0;
-    distance_[1][t] = 0;
-
-    // visit(q, 0, s, 0);
-    // visit(q, 1, t, 0);
-    // Implement the rest of the algorithm yourself
-    // std::cout << "aaa." << std::endl;
-    while (true) {
-      // printDistance(distance_[direction]);
-      int u = extractMin(distance_[direction], visited_);
-      // std::cout << "working set: " << std::endl;
-      // for (int i: workset_) {
-      //   std::cout << workset_[i] << ", ";
-      // }
-      // std::cout << "u = " << u << std::endl;
-
-      if (inside(workset_, u) || u == -1) {
-        break;
-      } else {
-        visited_[u] = true;
-        workset_.push_back(u);
-        for (int j = 0; j < adj_[direction][u].size(); ++j) {
-          // std::cout << "j = " << j << std::endl;
-          int v = adj_[direction][u][j];
-          int alt = distance_[direction][u] + cost_[direction][u][j];
-          if (alt < distance_[direction][v]) {
-            // std::cout << "relaxing (" << u << ", " << v << "), Original = " << distance_[direction][v] << ", new = " << alt << std::endl;
-            distance_[direction][v] = alt;
-          }
-        }
-      }
-
-      direction = direction == 0 ? 1 : 0;
-    }
-
-    // std::cout << "final dist: ";
-    // printDistance(distance_[0]);
-    // std::cout << "finalrdist: ";
-    // printDistance(distance_[1]);
-
-    Len min = INFINITY_;
-    for (int u: workset_) {
-      if (distance_[0][u] != INFINITY_ && distance_[1][u] != INFINITY_) {
-        int alt = distance_[0][u] + distance_[1][u];
-        // std::cout << "alt[" << u << "] = " << alt << std::endl;
+  Len calculateShortestPath() {
+    Len min = const_INFINITY;
+    for (int u: _workset) {
+      if (_distance[0][u] != const_INFINITY && _distance[1][u] != const_INFINITY) {
+        int alt = _distance[0][u] + _distance[1][u];
         if (min > alt) {
           min = alt;
         }
       }
     }
 
-    return min == INFINITY_ ? -1 : min;
+    return min == const_INFINITY ? -1 : min;
+  }
+
+public:
+  Bidijkstra(int n, const Adj &adj, const Adj &cost) :
+    _n(n),
+    _adj(adj),
+    _cost(cost),
+    _distance(2, vector<Len>(n)),
+    _visited(n)
+  { _workset.reserve(n); }
+
+  // Returns the distance from s to t in the graph.
+  Len query(int s, int t) {
+    clear();
+    Queue q(2);
+    if (s == t) {
+      return 0;
+    }
+    int direction = 0;
+    _distance[0][s] = 0;
+    _distance[1][t] = 0;
+
+    // Implement the rest of the algorithm yourself
+    while (true) {
+      int u = extractMin(direction);
+
+      if (u == -1 || _visited[u]) {
+        break;
+      } else {
+        _visited[u] = true;
+        _workset.push_back(u);
+        for (uint32_t j = 0; j < _adj[direction][u].size(); ++j) {
+          int v = _adj[direction][u][j];
+          int alt = _distance[direction][u] + _cost[direction][u][j];
+          if (alt < _distance[direction][v]) {
+            _distance[direction][v] = alt;
+          }
+        }
+      }
+
+      direction = !direction;
+    }
+
+    return calculateShortestPath();
   }
 };
 
