@@ -67,11 +67,6 @@ class Bidijkstra {
     }
   }
 
-public:
-  Bidijkstra(int n, Adj adj, Adj cost)
-    : n_(n), adj_(adj), cost_(cost), distance_(2, vector<Len>(n, INFINITY_)), visited_(n)
-  { workset_.reserve(n); }
-
   // Initialize the data structures before new query,
   // clear the changes made by the previous query.
   void clear() {
@@ -83,18 +78,29 @@ public:
     workset_.clear();
   }
 
-  // Processes visit of either forward or backward search
-  // (determined by value of side), to node v trying to
-  // relax the current distance by dist.
-  void visit(Queue& q, int side, int v, Len dist) {
-    // Implement this method yourself
+  Len calculateShortestPath() {
+    Len min = INFINITY_;
+    for (int u: workset_) {
+      if (distance_[0][u] != INFINITY_ && distance_[1][u] != INFINITY_) {
+        int alt = distance_[0][u] + distance_[1][u];
+        if (min > alt) {
+          min = alt;
+        }
+      }
+    }
+
+    return min == INFINITY_ ? -1 : min;
   }
+
+public:
+  Bidijkstra(int n, Adj adj, Adj cost)
+    : n_(n), adj_(adj), cost_(cost), distance_(2, vector<Len>(n, INFINITY_)), visited_(n)
+  { workset_.reserve(n); }
 
   // Returns the distance from s to t in the graph.
   Len query(int s, int t) {
     clear();
     Queue q(2);
-    // std::cout << "s = " << s << ", t = " << t << std::endl;
     if (s == t) {
       return 0;
     }
@@ -102,18 +108,9 @@ public:
     distance_[0][s] = 0;
     distance_[1][t] = 0;
 
-    // visit(q, 0, s, 0);
-    // visit(q, 1, t, 0);
     // Implement the rest of the algorithm yourself
-    // std::cout << "aaa." << std::endl;
     while (true) {
-      // printDistance(distance_[direction]);
       int u = extractMin(distance_[direction], visited_);
-      // std::cout << "working set: " << std::endl;
-      // for (int i: workset_) {
-      //   std::cout << workset_[i] << ", ";
-      // }
-      // std::cout << "u = " << u << std::endl;
 
       if (inside(workset_, u) || u == -1) {
         break;
@@ -121,11 +118,9 @@ public:
         visited_[u] = true;
         workset_.push_back(u);
         for (int j = 0; j < adj_[direction][u].size(); ++j) {
-          // std::cout << "j = " << j << std::endl;
           int v = adj_[direction][u][j];
           int alt = distance_[direction][u] + cost_[direction][u][j];
           if (alt < distance_[direction][v]) {
-            // std::cout << "relaxing (" << u << ", " << v << "), Original = " << distance_[direction][v] << ", new = " << alt << std::endl;
             distance_[direction][v] = alt;
           }
         }
@@ -134,23 +129,7 @@ public:
       direction = direction == 0 ? 1 : 0;
     }
 
-    // std::cout << "final dist: ";
-    // printDistance(distance_[0]);
-    // std::cout << "finalrdist: ";
-    // printDistance(distance_[1]);
-
-    Len min = INFINITY_;
-    for (int u: workset_) {
-      if (distance_[0][u] != INFINITY_ && distance_[1][u] != INFINITY_) {
-        int alt = distance_[0][u] + distance_[1][u];
-        // std::cout << "alt[" << u << "] = " << alt << std::endl;
-        if (min > alt) {
-          min = alt;
-        }
-      }
-    }
-
-    return min == INFINITY_ ? -1 : min;
+    return calculateShortestPath();
   }
 };
 
