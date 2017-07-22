@@ -30,7 +30,8 @@ class AStar {
 
 
   int extractMinFScore(int direction) const {
-    int min = numeric_limits<int>::max(), min_index = -1;
+    Len min = const_INFINITY;
+    int min_index = -1;
     for (uint32_t i = 0; i < _fScore[direction].size(); ++i) {
       if (!_visited[i] && min > _fScore[direction][i]) {
         min = _fScore[direction][i];
@@ -106,7 +107,7 @@ class AStar {
   }
 
 public:
-  AStar(uint32_t n, Adj adj, Adj cost, std::vector<std::pair<Len,Len>> xy) :
+  AStar(uint32_t n, const Adj &adj, const Adj &cost, const std::vector<std::pair<Len,Len>> &xy) :
     _n(n),
     _adj(adj),
     _cost(cost),
@@ -149,7 +150,7 @@ public:
     while (true) {
       // Extract min based on potential instead of the actual distance.
       int u = extractMinFScore(direction);
-      
+
       if (u == -1 || _visited[u]) {
         break;
       }
