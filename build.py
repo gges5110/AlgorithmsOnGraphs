@@ -11,7 +11,7 @@ def build():
     PA = module.split("/")[0]
     sub_module = module.split("/")[1]
 
-    command = "g++ -o " + module + "/" + sub_module + ".exe " + module + "/" + sub_module + ".cpp -std=c++11"
+    command = "g++ -o " + module + "/" + sub_module + ".exe " + module + "/" + sub_module + ".cpp -std=c++11 -Wall -Werror"
     p = subprocess.Popen(["exec " + command], shell=True, stderr=subprocess.STDOUT)
     p.wait()
 
