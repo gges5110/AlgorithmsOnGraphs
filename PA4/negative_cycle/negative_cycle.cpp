@@ -16,37 +16,31 @@ Execution command:
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include <limits.h>
+#include <limits>
 
 using std::vector;
 using std::ifstream;
+using std::numeric_limits;
 
+const int inf = numeric_limits<int>::max();
 // https://stackoverflow.com/questions/16898416/fastest-algorithm-to-detect-if-there-is-negative-cycle-in-a-graph
 
 int negative_cycle(const vector<vector<int>> &adj, const vector<vector<int>> &cost) {
   // write your code here
-  int n = adj.size();
-  vector<int> dist(n, INT_MAX);
+ vector<long> dist(adj.size(), inf);
   dist[0] = 0;
-
-  for (int u = 1; u < n; ++u) {
-    for (int j = 0; j < adj[u].size(); ++j) {
-      int v = adj[u][j], alt = dist[u] + cost[u][j];
-      if (alt < dist[v]) {
-        dist[v] = alt;
-      }
-    }
+  for (int i = 0; i < adj.size(); i++) {
+    for(int u = 0; u < adj.size(); u++){
+	  for (int k = 0; k < adj[u].size(); k++) {
+	    int v = adj[u][k];
+	    if(dist[v] > dist[u] + cost[u][k]) {
+		    dist[v] = dist[u] + cost[u][k];
+			if(i == adj.size() - 1) 
+			  return 1;
+		}
+	  }
+	}
   }
-
-  for (int u = 0; u < n; ++u) {
-    for (int j = 0; j < adj[u].size(); ++j) {
-      int v = adj[u][j];
-      if (dist[u] + cost[u][j] < dist[v]) {
-        return 1;
-      }
-    }
-  }
-
   return 0;
 }
 
