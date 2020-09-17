@@ -29,7 +29,7 @@ int negative_cycle(const vector<vector<int>> &adj, const vector<vector<int>> &co
   vector<int> dist(n, INT_MAX);
   dist[0] = 0;
 
-  for (int u = 1; u < n; ++u) {
+  for (int u = 0; u < n; ++u) {
     for (int j = 0; j < adj[u].size(); ++j) {
       int v = adj[u][j], alt = dist[u] + cost[u][j];
       if (alt < dist[v]) {
